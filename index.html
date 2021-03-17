@@ -18,6 +18,32 @@
             </div>
             <div class="product-info">
                 <h1>{{product}}</h1>
+                <p v-show="inventory">In Stock</p>
+                <!--<p v-if="inventory>10></p>"-->
+                <p v-if="onSale">On Sale!</p>
+                <p v-else>Sorry! Not for sale</p>
+
+                <ul>
+                    <li v-for="detail in details">{{detail}} </li>
+                </ul>
+
+                <table border="1" style="border-collapse: collapse">
+                    <tr>
+                        <td v-for="size in sizeArr">{{size.size}}</td>
+                    </tr>
+                    <tr>
+                        <td v-for="size in sizeArr" :key="sizeArr.size">{{size.length}}</td>
+                    </tr>
+                </table>
+                
+                <div v-for="variant in variants" :key ="variant.variantId"> <!--why would you need a key attribute?-->
+                    <p>{{variant.variantColor}}</p>
+                </div>
+
+                <button v-on:click="cart+=1">Add to Cart</button>
+                <div class="cart">
+                    <p>Cart({{cart}})</p>
+                </div>
             </div>
         </div>
     </div>
