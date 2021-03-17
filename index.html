@@ -36,14 +36,19 @@
                     </tr>
                 </table>
                 
-                <div v-for="variant in variants" :key ="variant.variantId"> <!--why would you need a key attribute?-->
-                    <p>{{variant.variantColor}}</p>
+                <div v-for="variant in variants" 
+                     :key ="variant.variantId" 
+                     class="color-box"
+                     :style="{backgroundColor: variant.variantColor}"
+                     @mouseover="updateProduct(variant.variantImage)"> 
                 </div>
 
-                <button v-on:click="cart+=1">Add to Cart</button>
+                <button @click="addToCart">Add to Cart</button>
+                <button @click="removeFromCart">Remove from Cart</button>
                 <div class="cart">
                     <p>Cart({{cart}})</p>
                 </div>
+
             </div>
         </div>
     </div>
