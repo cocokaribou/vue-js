@@ -1,3 +1,19 @@
+Vue.component('product-details',{
+    props:{
+        details:{
+            type: Array,
+            required: true
+        }
+    },
+    data(){
+        return{
+            message:"warm and cozy"
+        }
+    },
+    template:`
+    <p>Production description: {{message}}</p>`
+})
+
 Vue.component('product',{
     props:{
         premium:{
@@ -14,14 +30,16 @@ Vue.component('product',{
     </div>
     <div class="product-info">
         <h1>{{title}}</h1>
+        <p>Shipping: {{shipping}}</p>
         <p v-if="inStock">In Stock</p>
         <p v-else :class="{outOfStock : !inStock}">Out of stock</p>
         <p v-show="premium">User is premium</p>
-        
+        <product-details :details="details"></product-details>
         <ul>
             <li v-for="detail in details">{{detail}} </li>
         </ul>
 
+        <!--
         <table border="1" style="border-collapse: collapse">
             <tr>
                 <td v-for="size in sizeArr">{{size.size}}</td>
@@ -30,10 +48,20 @@ Vue.component('product',{
                 <td v-for="size in sizeArr" :key="sizeArr.size">{{size.length}}</td>
             </tr>
         </table>
+        -->
+
+        <table border="1" style="border-collapse: collapse">
+        <tr>
+            <td v-for="s in sizeArr.size">{{s}}</td>
+        </tr>
+        <tr>
+            <td v-for="l in sizeArr.length">{{l}}</td>
+        </tr>
+        </table>
         
         <div v-for="(variant, index) in variants"
-            class="color-box"
             :key ="variant.variantId" 
+            class="color-box"
             :style="{backgroundColor: variant.variantColor}"
             @mouseover="updateProduct(index)"> 
         </div>
@@ -42,9 +70,6 @@ Vue.component('product',{
             :disabled="!inStock"
             :class="{disabledButton: !inStock}">Add to Cart</button>
         <button @click="removeFromCart">Remove</button>
-        <div class="cart">
-            <p>Cart({{cart}})</p>
-        </div>
 
     </div>
 </div>
@@ -52,7 +77,6 @@ Vue.component('product',{
     data(){
         return{
             product: 'Socks',
-            description: 'warm and cozy',
             brand: 'Vue Mastery',
             selectedVariant: 0,
             link: 'https://velog.io/@cocokaribou',
@@ -73,32 +97,18 @@ Vue.component('product',{
                     variantQuantity: 0,
                 }
             ],
-            sizeArr:[
-                {
-                    size: "S",
-                    length: 240
-                },
-                {
-                    size: "M",
-                    length: 260
-                },
-                {
-                    size: "L",
-                    length: 280
-                }
-            ],
-            cart: 0,
+            sizeArr:{
+                size: ["S", "M", "L"],
+                length: [240, 260, 280]
+            }
         }
     },
     methods:{
         addToCart(){
-            this.cart += 1
+            this.$emit('add-to-cart', this.variants[this.selectedVariant].variantId)
         },
         removeFromCart(){
-            this.cart -= 1
-            if(this.cart <= 0) {
-                this.cart = 0
-            } 
+            this.$emit('remove-from-cart', this.variants[this.selectedVariant].variantId)
         },
         updateProduct(index){
             this.selectedVariant = index
@@ -115,25 +125,35 @@ Vue.component('product',{
         },
         inStock(){
             return this.variants[this.selectedVariant].variantQuantity
+        },
+        shipping(){
+            if(this.premium){
+                return "Free"
+            }else{
+                return 2.99
+            }
         }
     }
 
 })
 
-Vue.component('product details'{
-    template:`
-        
-    `,
-    data(){
-        return{
-        }
-    }
-})
 
 let app = new Vue({
     el: '#app',
     data:{
-        premium: true
+        premium: true,
+        cart: []
+    },methods: {
+        updateCart(id){
+            this.cart.push(id)
+        },
+        removeCart(id){
+            for(let i=this.cart.length-1; i>=0; i--){
+                if(this.cart[i] === id){
+                    this.cart.splice(i,1);
+                }
+            }
+        }
+
     }
-    
 })
