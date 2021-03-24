@@ -1,3 +1,19 @@
+Vue.component('test-component',{
+    data(){
+        return{
+            message:"what if i do this"
+        }
+    },
+    template:`
+        <button @click="clickAlert, ">testest</button>
+    `,
+    methods:{
+        clickAlert(){
+            alert("message");
+        }
+    }
+})
+
 Vue.component('product-details',{
     props:{
         details:{
@@ -34,7 +50,7 @@ Vue.component('product',{
         <p v-if="inStock">In Stock</p>
         <p v-else :class="{outOfStock : !inStock}">Out of stock</p>
         <p v-show="premium">User is premium</p>
-        <product-details :details="details"></product-details>
+        <test-component></test-component>
         <ul>
             <li v-for="detail in details">{{detail}} </li>
         </ul>
@@ -65,7 +81,6 @@ Vue.component('product',{
             :style="{backgroundColor: variant.variantColor}"
             @mouseover="updateProduct(index)"> 
         </div>
-
         <button @click="addToCart"
             :disabled="!inStock"
             :class="{disabledButton: !inStock}">Add to Cart</button>

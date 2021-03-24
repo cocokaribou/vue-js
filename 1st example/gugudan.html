@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+</head>
+<body>
+    <div id="gugu">
+        <div v-if="first">{{first}}곱하기 {{second}}는?</div>
+        <form v-on:submit="onSubmitForm">
+            <input type="number" v-model="value"> <!--input tag에서 바뀌는 입력값을 데이터로 받고 싶다-->
+            <button type="submit">input</button> <!--refreshes-->
+        </form>
+        <div id="result">{{result}}</div>
+    </div>
+
+    <script>
+        const app = new Vue({
+            el:"#gugu", //id tag
+            data:{
+                first: Math.ceil(Math.random()*9),
+                second: Math.ceil(Math.random()*9),
+                value: '',
+                result: '',
+
+            },
+            methods:{
+                onSubmitForm(e){
+                    e.preventDefault();
+                    console.log(this.first, this.second, this.value)
+                    if(this.first * this.second === parseInt(this.value)){
+                        this.result = "정답!";
+                    }else{
+                        this.result = "땡";
+                    }
+                }
+            },
+        });
+    </script>
+</body>
+</html>
