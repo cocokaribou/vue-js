@@ -1,3 +1,7 @@
+<!--   
+----------------------------------------------------------------------
+-->
+
 <template>
   <section id="sec">
     <h1>API Reference</h1>
@@ -5,15 +9,13 @@
       <VueList title="フォルダ" v-bind:parsed="parsedFolders"/>
       <VueList title="ファイル" v-bind:parsed="parsedFiles"/>
 
-      <!--
-      <VueList title="利用認証" target="관리/유저" way="기능" />
-      <VueList title="ユーザーの管理" target="관리" way="기능" />
-      <VueList title="グループの管理" target="관리" way="기능" />
-      <VueList title="共有の管理" target="관리" way="기능" />
-      -->
     </div>
   </section>
 </template>
+
+<!--   
+----------------------------------------------------------------------
+-->
 
 <script>
 import Doc from '/data/openapi.yaml';
@@ -25,9 +27,24 @@ import List from '../components/List'
  * @returns {[]|*[]}
  */
 const yamlParser = function(document, type) {
-  if(!document.hasOwnProperty("paths")) return [];
+  if(!document.hasOwnProperty("paths")) return []; 
+  //hasOwnProperty()
+  //인자로는 key값, 오브젝트에 키값이 있는지(이름만 선언되면 가져온다)
+  
   const pathKey = Object.keys(document.paths);
+  //Object.keys()
+  //오브젝트의 속성의 이름(key)를 가져온다, 결과값의 타입은 배열
+  //typeof()로 보면 배열도 다 오브젝트로 뜨네..
+  
   let fileObjectKey = pathKey.filter(item => (item.toLowerCase().indexOf(type) > 0));
+  //filter()
+  //new array = array.filter(element=> condition)
+  //배열 접근시 array[index]
+  //오브젝트 접근시 object.key
+
+  //indexOf()
+  //arr.indexOf(searchElement[,)
+  //이거... 구문은 조금 어렵지만 ...indexOf("openapp") 이렇게 하면 유저/관리자 나누기도 가능
 
   let fileArr = [];
   for(let url of fileObjectKey) {
@@ -59,25 +76,3 @@ export default {
   }
 }
 </script>
-
-<style scoped lang="scss">
-  h1 {
-    text-align: center;
-  }
-  .container {
-    height: 100%;
-    width: 100%;
-    display: inline-grid;
-    grid-template-columns: repeat(auto-fit, minmax(20%, auto));
-    //grid-auto-columns: minmax(10px, auto);
-    grid-template-rows: repeat(2, minmax(30%, auto)); // rows 크기 자동조절
-    //grid-auto-rows: minmax(20vh, auto);
-    gap: 1rem;
-    grid-auto-flow: dense;
-  }
-
-  //.sec {
-  //  display: flex;
-  //  flex-wrap: wrap; // flex 일때 다음줄로 자연스럽게 넘어가게함
-  //}
-</style>
