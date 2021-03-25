@@ -1,0 +1,83 @@
+<template>
+  <section id="sec">
+    <h1>API Reference</h1>
+    <div class="container">
+      <VueList title="フォルダ" v-bind:parsed="parsedFolders"/>
+      <VueList title="ファイル" v-bind:parsed="parsedFiles"/>
+
+      <!--
+      <VueList title="利用認証" target="관리/유저" way="기능" />
+      <VueList title="ユーザーの管理" target="관리" way="기능" />
+      <VueList title="グループの管理" target="관리" way="기능" />
+      <VueList title="共有の管理" target="관리" way="기능" />
+      -->
+    </div>
+  </section>
+</template>
+
+<script>
+import Doc from '/data/openapi.yaml';
+import List from '../components/List'
+
+/**
+ * @param document
+ * @param type
+ * @returns {[]|*[]}
+ */
+const yamlParser = function(document, type) {
+  if(!document.hasOwnProperty("paths")) return [];
+  const pathKey = Object.keys(document.paths);
+  let fileObjectKey = pathKey.filter(item => (item.toLowerCase().indexOf(type) > 0));
+
+  let fileArr = [];
+  for(let url of fileObjectKey) {
+    if(document.paths.hasOwnProperty(url)) {
+      const methods = Object.keys(document.paths[url]);
+      for(let method of methods) {
+        let methodVal = document.paths[url][method];
+        fileArr.push({
+          'method': method,
+          'summary': methodVal.summary,
+        })
+      }
+    }
+  }
+  return fileArr;
+}
+
+export default {
+  name: 'Home',
+  components: {
+    VueList: List,
+  },
+  data: function() {
+    return {
+      parsedFiles: yamlParser(Doc, "files"),
+      parsedFolders: yamlParser(Doc, "folders"),
+      doc: Doc,
+    }
+  }
+}
+</script>
+
+<style scoped lang="scss">
+  h1 {
+    text-align: center;
+  }
+  .container {
+    height: 100%;
+    width: 100%;
+    display: inline-grid;
+    grid-template-columns: repeat(auto-fit, minmax(20%, auto));
+    //grid-auto-columns: minmax(10px, auto);
+    grid-template-rows: repeat(2, minmax(30%, auto)); // rows 크기 자동조절
+    //grid-auto-rows: minmax(20vh, auto);
+    gap: 1rem;
+    grid-auto-flow: dense;
+  }
+
+  //.sec {
+  //  display: flex;
+  //  flex-wrap: wrap; // flex 일때 다음줄로 자연스럽게 넘어가게함
+  //}
+</style>

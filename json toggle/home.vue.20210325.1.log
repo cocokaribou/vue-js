@@ -1,0 +1,88 @@
+<template>
+  <section id="sec">
+    <h1>API Reference</h1>
+    <div class="container">
+      <div v-for="tag of tags">
+        <VueList v-bind:title="tag" v-bind:parsed="yaml(doc, tag)"/>
+      </div>
+    </div>
+  </section>
+</template>
+
+<script>
+import Doc from '/data/openapi.yaml';
+import List from '../components/List'
+
+/**
+ * @param document
+ * @param type
+ * @returns {[]|*[]}
+ */
+const yamlParser = function(document, type) {
+  if(!document.hasOwnProperty("paths")) return [];
+  const pathValue = Object.values(document.paths);
+  let rawObjects = pathValue.filter(function(methodsObj) {
+    for(let method in methodsObj) {
+      if(methodsObj.hasOwnProperty(method)) {
+        return methodsObj[method].tags[0] === type;
+      }
+    }
+  });
+
+  let pickedArr = [];
+  for(let raw of rawObjects) {
+    for(let method in raw) {
+      if(raw.hasOwnProperty(method)) {
+        pickedArr.push({
+          'method': method,
+          'summary': raw[method].summary,
+        });
+      }
+    }
+  }
+  return pickedArr;
+}
+
+const getTags = function(document) {
+  if(!document.hasOwnProperty("tags")) return [];
+  return document.tags.map(tag => tag.name);
+}
+
+export default {
+  name: 'Home',
+  components: {
+    VueList: List,
+  },
+  data: function() {
+    return {
+      tags: getTags(Doc),
+      doc: Doc,
+    }
+  },
+  methods: {
+    yaml: yamlParser,
+  }
+}
+</script>
+
+<style scoped lang="scss">
+  h1 {
+    text-align: center;
+  }
+  .container {
+    height: 100%;
+    width: 100%;
+    display: inline-grid;
+    grid-template-columns: repeat(auto-fit, minmax(20%, auto));
+    //grid-auto-columns: minmax(10px, auto);
+    grid-template-rows: repeat(2, minmax(30%, auto)); // rows 크기 자동조절
+    //grid-auto-rows: minmax(20vh, auto);
+    gap: 1rem;
+    grid-auto-flow: dense;
+  }
+
+  //.sec {
+  //  display: flex;
+  //  flex-wrap: wrap; // flex 일때 다음줄로 자연스럽게 넘어가게함
+  //}
+</style>

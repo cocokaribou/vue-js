@@ -1,0 +1,59 @@
+<template>
+  <div class="list">
+    <div class="contents">
+
+      <div class="title">
+        <span>{{ title }}</span>
+      </div>
+      <div class="data" v-for="data of parsed">
+        <span>{{ data.method }}</span>
+        <span>{{ data.summary }}</span>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "List.vue",
+  props: ['title', 'parsed'],
+}
+
+</script>
+
+<style scoped lang="scss">
+  header {
+    font-weight: bold;
+    font-size: 15px;
+  }
+
+  @media (max-width:10000px) { /*가로 너비가 600px 이하일 때 아래 스타일 적용*/
+    .list {
+      display: block;
+    }
+
+    .list {
+    display: inline-block;
+    box-sizing: border-box;
+    padding: 2em;
+    //width: 30%;
+  }
+
+  .title {
+    background-color: #a2b7e6;
+    line-height: 26px;
+    vertical-align: middle;
+    color: white;
+    height: 1.8rem;
+    font-size: 2em;
+    font-weight: bold;
+  }
+  }
+
+  //.song {
+  //  padding: 20px;
+  //  display: inline-block;  //인라인블럭으로 블럭을 텍스트처럼
+  //  width: 15%;
+  //  height: 10vh;
+  //}
+</style>

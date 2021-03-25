@@ -1,0 +1,568 @@
+{
+  "openapi": "3.0.0",
+  "servers": [
+    {
+      "url": "https://{API_SERVER_DOMAIN}.directcloud.jp",
+      "variables": {
+        "API_SERVER_DOMAIN": {
+          "default": "api"
+        }
+      }
+    }
+  ],
+  "info": {
+    "version": "1.0.0",
+    "title": "DirectCloud-Box API Reference for 3rd Party",
+    "description": "### この文書はDirectCloud-Boxサービスと3rd Partyアプリケーションまたはウェブサイトを連動するために開発されたAPI案内文書です。\n\n- サービス安定化のため、開発APIサーバーと運営APIサーバーを分けて運営しておりますので、ご参考ください。\n\n- 文書の**{API_SERVER_DOMAIN}**に使われるドメインは別途案内します。\n\n## Requests\n### `lang` パラメータ\n* このパラメータはheader, query, formから抽出されるため、いずれか一つの方法をお選びてください。\n\n* エラー応答はクライアント要請に含まれている`lang`パラメータに依存するため、必ず送らなければなりません。\n\n### アプリケーションからのAPI呼び出し\nDirectCloud-Box APIはhttp標準方式を使います。\n- 例)フォルダーリストを取得するには次のようなHTTP要請を送ります。\n  ```shell\n  GET https://{API_SERVER_DOMAIN}/openapp/v1/folders/index\n  ```\n\nインタネットブラウザ以外のPCおよびモバイルアプリケーションからAPIを呼び出すとき、すべての要請に次のラメータがHTTP Headerに含まなれていければなりません。\n* 예) Headerに含まれるパラメータ\n  |パラメータ名|値|必修|説明|例|\n  |---------|-|--|--|-|\n  device_id|String|Y|デバイス識別キー|ABCDEF-G123-4H56-7890-ACDEFGHIJ71\n  device_name|String|Y|デバイス名|iPhone Simulator\n  os_version|String|Y|デバイスOS名|iOS 7.0.3\n  app_version|String|Y|APIを呼び出すAPP情報|DirectBox 1.0.0\n\n* 例)デバイス別\n\n  device_type|device_id|device_name|os_version|app_version\n  -|-|-|-|-\n  PC Agent|49ed2c8c13xxx|DESKTOP-XXX|Windows 10|DirectBox 2.0.14\n  IOS APP|D09D900B-xxxx|iPhone|iOS 10.3.2|DirectCloud-BOX 1.4.21.8\n  Android APP|3548880620999|SM-N910K|Android+22|DirectBox+2.0.14\n\n## Responses\nAPI応答はJSON形式を使います。\n\n### `status_code`\n* 基本的にすべての応答の`status_code`は`200`です。\n\n* 応答の処理結果は`success`で判断できます。\n  * 応答が成功した場合success値がtrueです。\n  * 応答が失敗した場合success値がfalseです。\n  \n  **応答が成功した場合**\n  ```json\n  {\n    \"success\": true,           // 応答が成功したか\n    \"operation_authority\": {}, // 認証および権限情報\n    \"data\": {}                 // 成功した応答情報\n  }\n  ```\n\n  **応答が失敗した場合**\n  ```json\n  {\n    \"success\": false,       // 応答が成功したか\n    \"all\": \"error message\", // エラーメッセージ\n    \"code\": \"error code\"    // エラーコード\n  }\n  ```\n\n<br><details>\n<summary>文書の変更履歴をもっと見る</summary>\n\n### 文書変更履歴\n- **2021-02-02** 新規作成\n</detail>\n---\n"
+  },
+  "security": [
+    {
+      "application": [
+        "read"
+      ]
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "認証 API"
+    },
+    {
+      "name": "Folder",
+      "description": "フォルダ API"
+    },
+    {
+      "name": "File",
+      "description": "ファイル API"
+    }
+  ],
+  "paths": {
+    "/openapi/jauth/token": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "トークン発行",
+        "description": "### アカウントの情報を入力して`access_token`発行\n\n大体のAPI呼び出しにはアプリケーションの使用者が自分のデータでアクセスできるように認証が必要です。\n認証手続きに通じて`access_token`を発行し、これを使って各APIをご利用できます。\n\nDirectCloud-Boxはアプリケーションが使用者のデータでアクセスするように認証するとき、ログインによって生成されたセッションまたはトークンを使用します。\n\n> 💡 &nbsp; **Note**  <br><br>\n新規発行されたトークンはセキュリティのため６０日間のみ有効です。\n満了したトークンは破棄され、新規に発行されます。\n接続環境によってトークンが発行される仕組みです。例えば、chromeで発行されたトークンはIEでご使用できません。\n\n> ☎️ &nbsp; **営業担当者に問い合わせ**  <br><br>\n**API範囲制限**\naccess_token内部にはAPIの使用可能範囲が権限として定められており、それに従って利用できるAPIが制限されます。\nAPI範囲制限はDirectCloudは3rd Party企業間の契約で定めた範囲で制限されており、範囲の拡張については営業担当者にお問い合わせください。<br><br>\n**service, service_key**\nservice, service_keyはDirectCloudから発行いたしますので、営業担当者にお問い合わせください。\n",
+        "parameters": [
+          {
+            "$ref": "./parameters.yaml#/HeaderLangauge"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "./openapi/requests.yaml#/TokenRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "トークン発行成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./openapi/responses.yaml#/Token"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "トークン発行失敗",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Invalid Input": {
+                    "$ref": "./responses/response.error.yaml#/InputValueIsInvalid"
+                  },
+                  "Invalid Login": {
+                    "$ref": "./responses/response.error.yaml#/InvalidLogin"
+                  },
+                  "No Account": {
+                    "$ref": "./responses/response.error.yaml#/NoAccount"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/openapi/jauth/tokenExpire": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "トークン破棄",
+        "description": "### `access_token`満了させること\n使用者のログアウトまたは接続終了をサポートするために`access_token`を破棄(満了)します。\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "./openapi/requests.yaml#/TokenExpireRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "トークン破棄成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./openapi/responses.yaml#/Success"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/openapp/v1/folders/index/{node}": {
+      "get": {
+        "tags": [
+          "Folder"
+        ],
+        "summary": "フォルダリスト照会",
+        "description": "### 特定のフォルダリスト照会\n`node`に該当するフォルダの一覧を照会します。\n\n**MyBOX**はユーザー自身の専用スペースです。 他の人は閲覧できません。\n\n**SharedBOX**は会社Codeを共有するユーザーの間にファイルを共有する空間です。 管理者により利用権限が与えられます。\n",
+        "parameters": [
+          {
+            "$ref": "./parameters.yaml#/HeaderAccessToken"
+          },
+          {
+            "$ref": "./parameters.yaml#/PathNode"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "フォルダリスト照会成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./openapi/responses.yaml#/FolderList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/openapp/v1/folders/create/{node}": {
+      "post": {
+        "tags": [
+          "Folder"
+        ],
+        "summary": "フォルダ追加",
+        "description": "### 指定したフォルダの位置に新しいフォルダを追加\n`node`は新規フォルダの作成先であるフォルダのnodeです。\n\nフォルダ名の重複は許可されていません。重複フォルダ名を入力すると重複エラーが発生します。\n\n> 💡 &nbsp; **Note**  <br><br>\n**SharedBOX**でのフォルダ作成は、 1Depth(フォルダ node 6桁)以上から作成でき、すべての権限(owner)以上の権限が必要です。\n",
+        "parameters": [
+          {
+            "$ref": "./parameters.yaml#/HeaderAccessToken"
+          },
+          {
+            "$ref": "./parameters.yaml#/PathNode"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "./openapi/requests.yaml#/CreateFolderRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "フォルダ追加成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./openapi/responses.yaml#/CreateFolder"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/openapp/v1/folders/rename/{node}": {
+      "post": {
+        "tags": [
+          "Folder"
+        ],
+        "summary": "フォルダ名変更",
+        "description": "### 特定のフォルダの名前変更\n`node`はフォルダの名前を変更しようとするフォルダのnodeです。\n\n現在の場所に同じ名前のフォルダが存在する場合、エラーが発生します。\n\n> 💡 &nbsp; **Note**  <br><br>\n3桁以下のフォルダコードについては、システムで定義されたフォルダ名であるため、変更は制限されます。\n",
+        "parameters": [
+          {
+            "$ref": "./parameters.yaml#/HeaderAccessToken"
+          },
+          {
+            "$ref": "./parameters.yaml#/PathNode"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "./openapi/requests.yaml#/RenameFolderRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "フォルダ名変更成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./openapi/responses.yaml#/Success"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/openapp/v1/folders/delete/{node}": {
+      "post": {
+        "tags": [
+          "Folder"
+        ],
+        "summary": "フォルダ削除",
+        "description": "### 特定のフォルダ削除\n`node`は削除するフォルダです。\nフォルダの場所によって削除が制限されることがあります。\n\n削除されたフォルダは会社のゴミ箱の機能設定に従ってゴミ箱から復元することができます。\n\n> 💡 &nbsp; **Note**  <br><br>\n**MyBox** 基準3桁以下のnodeは削除不可\n**SharedBox** 基準6桁以下のnodeは削除不可  <br><br>\n**その他のフォルダ**の下位にロックされているファイルがある場合は、削除不可\n",
+        "parameters": [
+          {
+            "$ref": "./parameters.yaml#/HeaderAccessToken"
+          },
+          {
+            "$ref": "./parameters.yaml#/PathNode"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "フォルダ削除成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./openapi/responses.yaml#/Success"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/openapp/v1/files/index/{node}": {
+      "post": {
+        "tags": [
+          "File"
+        ],
+        "summary": "ファイル照会",
+        "description": "### 特定のフォルダにあるファイル照会\n\nDirectCloud-Boxのファイルにアクセスします。\n\n`node`は照会するファイルが入っているフォルダです。\n`sort`は並び替えのことで、デフォルトはファイル名の昇順です。\n`size_text`はファイルのサイズを単位に合わせて処理した値(KB、MB、GBに換算)です。\n\n> 💡 &nbsp; **Note**  <br><br>\n**lastpage**  \nすべてのファイルの数とlimit、offsetの合算を比較し、最終ページの有無をお知らせします。\n&nbsp;&nbsp;&nbsp;&nbsp; true: 最終ページ\n&nbsp;&nbsp;&nbsp;&nbsp; false: 次のページ存在 <br><br>\n**limit, offset**  \nlimitとoffsetはページング処理時に使用ください。  <br><br>\n\n### 例) 1ページを200個出力する場合は「limit」と「offset」の設定\n&nbsp;&nbsp;&nbsp;&nbsp; 1ページ ▶︎ limit=200 / offset=0\n&nbsp;&nbsp;&nbsp;&nbsp; 2ページ ▶︎ limit=200 / offset=200\n&nbsp;&nbsp;&nbsp;&nbsp; 3ページ ▶︎ limit=200 / offset=400\n",
+        "parameters": [
+          {
+            "$ref": "./parameters.yaml#/HeaderAccessToken"
+          },
+          {
+            "$ref": "./parameters.yaml#/PathNode"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "./openapi/requests.yaml#/FilesRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ファイル照会成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./openapi/responses.yaml#/GetFiles"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/openapp/v1/files/upload/{node}": {
+      "post": {
+        "tags": [
+          "File"
+        ],
+        "summary": "ファイルアップロード",
+        "description": "### 特定のフォルダにファイルアップロード\n `node`はファイルをアップロードするフォルダの位置です。\n\n ファイルをアップロードします。同じファイル名がある場合は上書き処理されます。\n ファイルのサイズは会社で設定した最大容量までアップロードできます。(最大許容限度:5GB)\n\n > 💡 &nbsp; **Note**  <br><br>\n **Case-sensitive**  \n パラメータ名は大文字・小文字を区分していますのでご注意ください。 <br><br>\n **重複した名前**\n アップロードフォルダに同じ名前のファイルが存在する場合はファイルを上書きし、既存ファイルは削除されるか、会社の設定に従って履歴管理されます。\n",
+        "parameters": [
+          {
+            "$ref": "./parameters.yaml#/HeaderAccessToken"
+          },
+          {
+            "$ref": "./parameters.yaml#/PathNode"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "./openapi/requests.yaml#/UploadFileRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ファイルアップロード成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./openapi/responses.yaml#/UploadFile"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/openapp/v1/files/rename/{node}": {
+      "post": {
+        "tags": [
+          "File"
+        ],
+        "summary": "ファイル名変更",
+        "description": "### 特定のフォルダに位置したファイル名変更\n\n`node`はファイルが位置したフォルダです。\nフォルダに同じ名前のファイルが存在する場合はエラー処理されます。\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "./openapi/requests.yaml#/RenameFileRequest"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "./parameters.yaml#/HeaderAccessToken"
+          },
+          {
+            "$ref": "./parameters.yaml#/PathNode"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ファイル名変更成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./openapi/responses.yaml#/Success"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/openapp/v1/files/download/{node}": {
+      "post": {
+        "tags": [
+          "File"
+        ],
+        "summary": "ファイルダウンロード",
+        "description": "### 特定のフォルダに位置するファイルダウンロード\n\n`node`はファイルが位置するフォルダです。\n> 💡 &nbsp; **Note**  <br><br>\n**flag_direct**  \nflag_direct=Yを使用する場合はAPI応答ではなくファイルバイナリデータをダウンロードします。  <br><br>\n**download_url**  \nファイルのdownload_urlは1分間のみ有効で、1分後に満了します。\n",
+        "parameters": [
+          {
+            "$ref": "./parameters.yaml#/HeaderAccessToken"
+          },
+          {
+            "$ref": "./parameters.yaml#/PathNode"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "./openapi/requests.yaml#/DownloadFileRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ファイルダウンロード成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./openapi/responses.yaml#/DownloadFile"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/openapp/v1/files/delete/{node}": {
+      "post": {
+        "tags": [
+          "File"
+        ],
+        "summary": "ファイル削除",
+        "description": "### 特定のフォルダに位置するファイル削除\n\n`node`はファイルが位置するフォルダです。\n\nファイルを削除します。複数削除を支援します。\n削除されたファイルは会社のゴミ箱の機能設定に従ってゴミ箱から復旧することができます。\n> 💡 &nbsp; **Note**  <br><br>\nロック設定されたファイルは所有者でない場合は削除できないことがあります。\n",
+        "parameters": [
+          {
+            "$ref": "./parameters.yaml#/HeaderAccessToken"
+          },
+          {
+            "$ref": "./parameters.yaml#/PathNode"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "./openapi/requests.yaml#/DeleteFileRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ファイル削除成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./openapi/responses.yaml#/Success"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/openapp/v1/files/search/{node}": {
+      "post": {
+        "tags": [
+          "File"
+        ],
+        "summary": "ファイル検索",
+        "description": "### 特定のフォルダに入っているファイル検索\nファイルを検索します。\n\n`node`は検索先のフォルダです。\n`size_text`はファイルのサイズを単位に合わせて処理した値(KB、MB、GBに換算)です。\n> 💡 &nbsp; **Note**  <br><br>\n**lastpage**  \nファイル全体数とlimit、offset合算を比較して、最終ページの可否をお知らせします。\n&nbsp;&nbsp;&nbsp;&nbsp; true: 最終ページ\n&nbsp;&nbsp;&nbsp;&nbsp; false: 次のページ存在\n",
+        "parameters": [
+          {
+            "$ref": "./parameters.yaml#/HeaderAccessToken"
+          },
+          {
+            "$ref": "./parameters.yaml#/PathNode"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "./openapi/requests.yaml#/SearchFileRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ファイル検索成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./openapi/responses.yaml#/SearchFile"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/openapp/v1/links/create": {
+      "post": {
+        "tags": [
+          "File"
+        ],
+        "summary": "リンク作成",
+        "description": "### ファイル/フォルダのリンク作成\nファイルまたはフォルダのリンクを作成します。\n",
+        "parameters": [
+          {
+            "$ref": "./parameters.yaml#/HeaderAccessToken"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "./openapi/requests.yaml#/CreateLinkRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ファイルリンク作成成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./openapi/responses.yaml#/CreateLink"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/openapp/v1/viewer/create": {
+      "post": {
+        "tags": [
+          "File"
+        ],
+        "summary": "ファイルビューア作成",
+        "description": "### ファイルビューア作成\nファイルビューアを作成します。\n",
+        "parameters": [
+          {
+            "$ref": "./parameters.yaml#/HeaderAccessToken"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "./openapi/requests.yaml#/CreateViewerRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ファイルビューア作成成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./openapi/responses.yaml#/ViewerLink"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
