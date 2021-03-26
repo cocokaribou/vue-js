@@ -1,6 +1,4 @@
-<!--   
-----------------------------------------------------------------------
--->
+<!-------------------------------------------------------------------------->
 
 <template>
   <section id="sec">
@@ -13,9 +11,7 @@
   </section>
 </template>
 
-<!--   
-----------------------------------------------------------------------
--->
+<!-------------------------------------------------------------------------->
 
 <script>
 import Doc from '/data/openapi.yaml';
@@ -29,7 +25,7 @@ import List from '../components/List'
 const yamlParser = function(document, type) {
   if(!document.hasOwnProperty("paths")) return []; 
   //hasOwnProperty()
-  //인자로는 key값, 오브젝트에 키값이 있는지(이름만 선언되면 가져온다)
+  //인자로는 key값, 오브젝트에 키값이 있는지( 가져온다)
   
   const pathKey = Object.keys(document.paths);
   //Object.keys()
@@ -42,19 +38,21 @@ const yamlParser = function(document, type) {
   //배열 접근시 array[index]
   //오브젝트 접근시 object.key
 
+  //입력된 type에 따라 folder, file등을 소문자로 변환해서 걸러줌
+
   //indexOf()
   //arr.indexOf(searchElement[,)
   //이거... 구문은 조금 어렵지만 ...indexOf("openapp") 이렇게 하면 유저/관리자 나누기도 가능
 
   let fileArr = [];
-  for(let url of fileObjectKey) {
-    if(document.paths.hasOwnProperty(url)) {
-      const methods = Object.keys(document.paths[url]);
-      for(let method of methods) {
-        let methodVal = document.paths[url][method];
-        fileArr.push({
-          'method': method,
-          'summary': methodVal.summary,
+  for(let url of fileObjectKey) {    //type을 인자로 받으니 어떤 tag든 다 해당
+    if(document.paths.hasOwnProperty(url)) {    //url키 값의 밸류의 post의 밸류들 가져옴
+      const methods = Object.keys(document.paths[url]);    //url키 아래의 key만 가져옴 즉, post인지 get인지 가져옴
+      for(let method of methods) {    //post, get
+        let methodVal = document.paths[url][method];    //근데 이건 키밸류인데 배열처럼 접근하네..? 희한허네....
+        fileArr.push({    //fileArr은 배열선언했는데 키밸류로 푸쉬하네..
+          'method': method,    //post, get을 넣고
+          'summary': methodVal.summary,    //summary값을 넣고
         })
       }
     }
