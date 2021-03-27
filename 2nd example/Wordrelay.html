@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>wordrelay</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+
+</head>
+<!--태그부터 짜고, 바뀌는 부분을 데이터로 만들라-->
+
+<body>
+    <div id="root">
+        <div>{{word}}</div>
+        <form v-on:submit="onSubmitForm">
+            <input type="text" v-model="inputValue">
+            <button type="submit">입력</button>
+        </form>
+        <div>{{result}}</div>
+    </div>
+    <script>
+        const app = new Vue({
+            el:"#root",
+            data:{
+                word:'이원굉',
+                inputValue:'',
+                result:''
+
+            },
+            methods:{
+                onSubmitForm(e){
+                    e.preventDefault();
+                    if(this.inputValue[0] === this.word[this.word.length-1]){ //굳이 charAt 안해줘도 스트링에서 인덱싱 잘 됨.. 결과값 타입이나 하는 일 똑같음
+                        this.result = "정답!";
+                        this.word = this.inputValue;
+                        this.inputValue = '';
+                    }else{
+                        this.result = "쀄에~";
+                    }
+                },
+            },
+        });
+
+    </script>
+</body>
+</html>

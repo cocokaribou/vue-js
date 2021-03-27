@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>wordrelay</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+
+</head>
+<!--반복되는 부분을 컴포넌트로 만들어라-->
+<!--화면에 같은 요소를 렌더링하지만 중복은 제거한다-->
+
+<body>
+    <div id="root">
+        <word-relay given-word="lemme"></word-relay>
+        <word-relay given-word="test"></word-relay>
+        <word-relay given-word="first"></word-relay>
+    </div>
+
+    <!--html 속성에는 kebab case인데 뷰에선 camel case로 읽는....?-->
+    <script> 
+    //Component template should contain exactly one root element.
+        Vue.component('word-relay',{
+            template:`
+                <div>
+                    <div>{{word}}</div>
+                    <form v-on:submit="onSubmitForm">
+                        <input type="text" v-model="inputValue">
+                        <button type="submit">입력</button>
+                    </form>
+                    <div>{{result}}</div>
+                </div>
+            `,
+            props:['givenWord'],
+            data:function(){
+                return{
+                    word: this.givenWord,
+                    inputValue:'',
+                    result:''
+                }
+            },
+            methods:{
+                onSubmitForm(e){
+                    e.preventDefault();
+                    if(this.inputValue[0] === this.word[this.word.length-1]){ //굳이 charAt 안해줘도 스트링에서 인덱싱 잘 됨.. 결과값 타입이나 하는 일 똑같음
+                        this.result = "정답!";
+                        this.word = this.inputValue;
+                        this.inputValue = '';
+                    }else{
+                        this.result = "쀄에~";
+                    }
+                },
+            },
+        })
+    </script>
+
+<!--컴포넌트는 인스턴스보다 위에 정의-->
+<!--스크립트는 div#root보다 아래에-->
+
+<!-- 서버는 모든 컴포넌트를 다 내려보내준다-->
+    <script>
+        const app = new Vue({
+            el:"#root",
+            data:{
+
+            },
+            methods:{
+                
+            },
+        });
+
+    </script>
+
+    <!--스크립트는 js파일로 분리 가능-->
+    <!--js파일이 늘어나면 webpack을 써야 됨-->
+    <!--스크립트간의 순서도 일치해야되고, 서로 의존성 문제도 있어서-->
+    <!--webpack이 하나로 합쳐준다-->
+</body>
+</html>

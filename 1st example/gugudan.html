@@ -4,14 +4,15 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>gugudan</title>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
 </head>
 <body>
     <div id="gugu">
         <div v-if="first">{{first}}곱하기 {{second}}는?</div>
         <form v-on:submit="onSubmitForm">
-            <input type="number" v-model="value"> <!--input tag에서 바뀌는 입력값을 데이터로 받고 싶다-->
+            <input type="number" ref="answer" v-model="value"> <!--input tag에서 바뀌는 입력값을 데이터로 받고 싶다-->
+            <!--ref 뷰에서 태그(DOM)에 접근가능, 그러나 vue의 목적에 어긋남-->
             <button type="submit">input</button> <!--refreshes-->
         </form>
         <div id="result">{{result}}</div>
@@ -29,12 +30,18 @@
             },
             methods:{
                 onSubmitForm(e){
-                    e.preventDefault();
-                    console.log(this.first, this.second, this.value)
+                    e.preventDefault(); //form이 submit되었을 때 기본 새로고침을 방지. if the event does not get explicitly handled, its default action should not be taken as it normally would be.
+                    console.log(this)
                     if(this.first * this.second === parseInt(this.value)){
                         this.result = "정답!";
+                        this.first = Math.ceil(Math.random()*9);
+                        this.second = Math.ceil(Math.random()*9);
+                        this.value = '';
+                        this.$refs.answer.focus(); //selected DOM
                     }else{
                         this.result = "땡";
+                        this.value = '';
+                        this.$refs.answer.focus();
                     }
                 }
             },
