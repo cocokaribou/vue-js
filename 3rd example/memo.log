@@ -1,0 +1,82 @@
+global component
+- forces unique names for every component
+- string template 
+- no css support
+- no build step
+
+
+Vue.component('component-name',{
+
+    data(){
+        return{
+            test: 'test'
+        }
+    },
+    methods:{
+    
+    },
+    template:{
+    
+    },
+    computed:{
+    
+    }
+
+})
+
+let app = new Vue({ 
+    el: '#container' 
+})
+
+
+
+*vue mastery 강의 코드 다 싱글파일 컴포넌트로 바꿔보기
+single file component
+
+- complete syntax highlighting
+- commonjs modules
+- component-scoped css
+
+webpack이 있어야 한다?
+흠...... 근데 전역 컴포넌트는 템플릿쪽 코드 신택싱이 너무 안돼서;;
+
+
+
+
+webpack 빌드시 error 까진 아니고 warning
+'mode'를 'development'인지, 'production'인지 설정
+
+webpack은 먼저 entry옵션을 읽는다 -> 시작점인 스크립트 파일읽음
+webpack은 자바스크립트만 합쳐준다
+로드 안된 vue파일은 자바스크립트 구문으로 안 읽히나보다..! 템플릿부터 시작이니까..?
+여기서 rules를 설정
+즉, 읽어내려가다가 module.rules 로 처리
+
+
+vue-loader
+vue-template-compiler
+vue 모듈과 vue-template-compiler는 버전이 일치해야 한다!!
+
+require VS import
+node환경에서는 require를 쓰고, 
+vue 환경에서는 import를 쓴다
+
+웹팩은 노드환경이라 require, 뷰는 import
+
+
+plugin은 후처리 느낌
+output이 나오기 전에 다시 plugin 이 적용돼서 한번 더 가공하는 그런 느낌
+
+
+mode
+production 배포버전
+development 개발버전
+
+devtool
+eval 개발시
+hidden-source-map 배포시
+
+
+resolve :{
+    extensions: [' '],   //확장자 처리 가능 
+}
