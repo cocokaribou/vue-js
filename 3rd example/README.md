@@ -1,9 +1,8 @@
 ### webpack dev dependencies
 - 배포를 위한 보조 도구, 개발된 소스를 웹팩으로 배포하는 것
-<br/>
-<br/>
+
 ### webpack.config.js
-- 네 개의 주요설정
+
 ```json
 const path = require('path'); //node module, absolute path
 
