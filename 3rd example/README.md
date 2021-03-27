@@ -3,7 +3,7 @@
 
 ### webpack.config.js
 
-```json
+```
 const path = require('path'); //node module, absolute path
 
 module.exports = {
@@ -15,7 +15,6 @@ module.exports = {
         //path: './build'; <--output directory as absolute path
         path: path.join(__dirname, 'build'),
     },
-    ...
 ```
 이제 스크립트 적을 때 vue cdn 입력 안해도 된다!
 
@@ -27,21 +26,19 @@ module.exports = {
 ...
 ```
 
-```json
+```
 ...    
     module: {
-        rules[{
-            ...
+        rules: [{
+            
         }],//script 파일들을 어떻게 합칠지를 정함
     }, //웹팩의 핵심
     plugins: [
-        ...
     ],
 ```
 package.json
-```json
+```
 {
-    ...
     "scripts" :{
         "build" : "webpack"
     }//npm run 명령어의 인자
